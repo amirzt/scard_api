@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from shop.models import Plan, ZarinpalCode, Transaction
-from shop.serializers import PlanSerializer, AddTransactionSerializer
+from shop.serializers import PlanSerializer, AddTransactionSerializer, TransactionSerializer
 from users.models import CustomUser
 
 ZP_API_REQUEST = "https://api.zarinpal.com/pg/v4/payment/request.json"
@@ -163,11 +163,8 @@ def verify(request):
 @permission_classes([IsAuthenticated])
 def add_bazar_myket_order(request):
     plan = Plan.objects.get(id=request.data['plan'])
-    package_name = CustomUser.objects.get(id=request.user.id).package_name
-
     serializer = AddTransactionSerializer(data=request.data,
                                           context={'user': request.user,
-                                                   'package_name': package_name,
                                                    'plan': plan.id,
                                                    'price': plan.price,
                                                    'gateway': request.data['gateway'],
@@ -188,3 +185,12 @@ def add_bazar_myket_order(request):
         return Response(status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def get_transactions(request):
+    transactions = Transaction.objects.filter(user=request.user,
+                                              state=Transaction.StateChoices.SUCCESS).order_by('-created_at')
+
+    return Response(TransactionSerializer(transactions, many=True).data)

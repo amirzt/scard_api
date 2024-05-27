@@ -8,5 +8,6 @@ urlpatterns = [
     path('send_request/', views.send_request),
     path('verify/', views.verify),
     path('add_bazar_myket_order/', views.add_bazar_myket_order),
+    path('get_transactions/', views.get_transactions),
 
 ]

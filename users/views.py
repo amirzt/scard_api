@@ -11,28 +11,30 @@ from article.serializers import ArticleSerializer
 from users.models import CustomUser, OTP, Shop, Favorite, Offer, HomeMessage
 import requests
 
-from users.serializers import CustomUserSerializer, ShopSerializer, OfferSerializer, MessageSerializer
+from users.serializers import CustomUserSerializer, ShopSerializer, OfferSerializer, MessageSerializer, \
+    RegistrationSerializer
 
 
 def send_otp(otp, phone):
-    api_url = "https://api2.ippanel.com/api/v1/sms/pattern/normal/send"
-
-    headers = {
-        'Content-Type': 'application/json',
-        'apikey': 'M-o-KUXHu_VfZgtr6dzrptzXjq0GFeZcoT5pV2PCc34='
-    }
-
-    body = {
-        "recipient": phone,
-        "sender": "3000505",
-        # "time": "2025-03-21T09:12:50.824Z",
-        "code": "snad47rjhgnpalm",
-        "variable": {
-            "code": otp
-        }
-    }
-    response = requests.post(api_url, headers=headers, data=json.dumps(body))
-    print(response)
+    pass
+    # api_url = "https://api2.ippanel.com/api/v1/sms/pattern/normal/send"
+    #
+    # headers = {
+    #     'Content-Type': 'application/json',
+    #     'apikey': 'M-o-KUXHu_VfZgtr6dzrptzXjq0GFeZcoT5pV2PCc34='
+    # }
+    #
+    # body = {
+    #     "recipient": phone,
+    #     "sender": "3000505",
+    #     # "time": "2025-03-21T09:12:50.824Z",
+    #     "code": "snad47rjhgnpalm",
+    #     "variable": {
+    #         "code": otp
+    #     }
+    # }
+    # response = requests.post(api_url, headers=headers, data=json.dumps(body))
+    # print(response)
 
 
 @api_view(['POST'])
@@ -40,22 +42,28 @@ def send_otp(otp, phone):
 def login(request):
     try:
         user = CustomUser.objects.get(phone=request.data['phone'])
-        user.is_active = True
-        user.save()
 
-        token, created = Token.objects.get_or_create(user=user)
+        if user.check_password(request.POST.get('password')):
+            user.is_active = True
+            user.save()
 
-        otp = OTP(user=user)
-        otp.save()
-        send_otp(otp.code, user.phone)
+            token, created = Token.objects.get_or_create(user=user)
 
-        return Response({
-            'token': token.key,
-            'exist': True
-        }, status=200)
+            # otp = OTP(user=user)
+            # otp.save()
+            # send_otp(otp.code, user.phone)
+
+            return Response({
+                'token': token.key,
+                'exist': True
+            }, status=200)
+        else:
+            return Response({
+                'message': 'رمز ورود اشتباه است'
+            }, status=403)
 
     except CustomUser.DoesNotExist:
-        user_serializer = CustomUserSerializer(data=request.data)
+        user_serializer = RegistrationSerializer(data=request.data)
 
         if user_serializer.is_valid():
             user = user_serializer.save()
@@ -63,9 +71,9 @@ def login(request):
             user.is_active = True
             user.save()
 
-            otp = OTP(user=user)
-            otp.save()
-            send_otp(otp.code, user.phone)
+            # otp = OTP(user=user)
+            # otp.save()
+            # send_otp(otp.code, user.phone)
 
             token, created = Token.objects.get_or_create(user=user)
 
@@ -107,11 +115,11 @@ def get_shops(request):
 @permission_classes([IsAuthenticated])
 def add_favorite(request):
     try:
-        fav = Favorite.objects.get(offer_id=request.data['shop'],
+        fav = Favorite.objects.get(offer_id=request.data['offer'],
                                    user=request.user)
         fav.delete()
     except Favorite.DoesNotExist:
-        fav = Favorite(offer_id=request.data['shop'],
+        fav = Favorite(offer_id=request.data['offer'],
                        user=request.user)
         fav.save()
     return Response(status=status.HTTP_200_OK)
@@ -120,7 +128,10 @@ def add_favorite(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def get_offers(request):
-    offers = Offer.objects.filter(is_active=True)
+    offers = Offer.objects.filter(is_active=True,
+                                  shop__is_active=True)
+    if 'search' in request.data:
+        offers = offers.filter(title__contains=request.data['search'])
     if 'shop' in request.data:
         offers = offers.filter(shop_id=request.data['shop'])
 

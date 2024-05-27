@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from shop.models import ZarinpalCode, Plan
+from shop.models import ZarinpalCode, Plan, Transaction
 
 
 @admin.register(ZarinpalCode)
@@ -17,8 +17,8 @@ class PlanAdmin(admin.ModelAdmin):
     fields = ('title', 'description', 'price', 'is_available', 'duration', 'bazar_myket',)
 
 
-@admin.register(Plan)
-class PlanAdmin(admin.ModelAdmin):
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
     list_display = ('user', 'plan', 'state', 'tracking_code')
     # search_fields = ('title__startswith',)
     fields = ('user', 'description', 'price', 'gateway', 'gateway_code', 'tracking_code', 'plan', 'state',)

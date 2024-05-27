@@ -3,10 +3,23 @@ from rest_framework import serializers
 from users.models import CustomUser, Shop, Favorite, Offer, HomeMessage
 
 
+class RegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['password', 'phone']
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def save(self, **kwargs):
+        user = CustomUser(phone=self.validated_data['phone'])
+        user.set_password(self.validated_data['password'])
+        user.save()
+        return user
+
+
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ['phone', 'expire_date']
 
 
 class ShopSerializer(serializers.ModelSerializer):

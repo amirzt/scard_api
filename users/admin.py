@@ -5,9 +5,9 @@ from users.models import CustomUser, Shop, Offer, HomeMessage
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('phone', 'expire_date',)
+    list_display = ('phone', 'expire_date', 'date_joint')
     search_fields = ('phone__startswith',)
-    fields = ('phone', 'is_visible', 'is_active', 'is_staff', 'app_type', 'version', 'date_joint', 'expire_date')
+    fields = ('phone', 'is_visible', 'is_active', 'is_staff', 'app_type', 'version', 'expire_date')
 
 
 @admin.register(Shop)

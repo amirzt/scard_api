@@ -28,7 +28,6 @@ class AddTransactionSerializer(serializers.ModelSerializer):
                                   gateway=self.context['gateway'],
                                   gateway_code=self.context['gateway_code'],
                                   plan_id=self.context['plan'],
-                                  package_name=self.context['package_name'],
                                   description=self.context['description'])
         transaction.save()
         return transaction

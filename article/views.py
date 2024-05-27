@@ -6,7 +6,7 @@ from article.models import Article
 from article.serializers import ArticleSerializer
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def get_articles(request):
     articles = Article.objects.filter(is_active=True).order_by('-created_at')

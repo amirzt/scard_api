@@ -26,7 +26,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     date_joint = models.DateField(auto_now_add=True)
-    expire_date = models.DateField(null=True, blank=True, default=get_yesterday_date)
+    expire_date = models.DateTimeField(null=True, blank=True, default=get_yesterday_date)
 
     app_type = models.CharField(default=AppType.bazar, choices=AppType.choices, max_length=20)
     version = models.CharField(default='0.0.0', max_length=20)
