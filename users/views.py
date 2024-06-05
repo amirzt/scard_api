@@ -144,7 +144,8 @@ def get_offers(request):
             offers = offers.order_by('-discount')
         elif request.data['sort'] == 'date':
             offers = offers.order_by('-created_at')
-    return Response(OfferSerializer(offers, many=True).data)
+    return Response(OfferSerializer(offers, many=True,
+                                    context={'user': request.user}).data)
 
 
 @api_view(['GET'])

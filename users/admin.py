@@ -14,7 +14,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 class ShopAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name__startswith',)
-    fields = ('name', 'description', 'logo', 'banner', 'phone', 'address', 'location', 'is_active', 'score')
+    fields = ('name', 'description', 'banner', 'phone', 'address', 'location', 'is_active', 'score')
 
 
 @admin.register(Offer)
