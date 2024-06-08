@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from shop.models import Plan, ZarinpalCode, Transaction
 from shop.serializers import PlanSerializer, AddTransactionSerializer, TransactionSerializer
 from users.models import CustomUser
+from users.serializers import CustomUserSerializer
 
 ZP_API_REQUEST = "https://api.zarinpal.com/pg/v4/payment/request.json"
 ZP_API_VERIFY = "https://api.zarinpal.com/pg/v4/payment/verify.json"
@@ -26,7 +27,12 @@ CallbackURL = 'https://addstory.website/api/shop/verify/'
 @permission_classes([IsAuthenticated])
 def get_plans(request):
     plans = Plan.objects.filter(is_available=True)
-    return Response(PlanSerializer(plans, many=True).data)
+    user = CustomUser.objects.get(id=request.user.id)
+
+    return Response({
+        "plans": PlanSerializer(plans, many=True).data,
+        'user': CustomUserSerializer(user).data,
+    })
 
 
 @api_view(['POST'])

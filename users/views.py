@@ -96,7 +96,7 @@ def check_otp(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_shops(request):
     shops = Shop.objects.filter(is_active=True)
     if 'sort' in request.data:
@@ -126,7 +126,7 @@ def add_favorite(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_offers(request):
     offers = Offer.objects.filter(is_active=True,
                                   shop__is_active=True)
@@ -144,8 +144,13 @@ def get_offers(request):
             offers = offers.order_by('-discount')
         elif request.data['sort'] == 'date':
             offers = offers.order_by('-created_at')
+
+    try:
+        user = CustomUser.objects.get(id=request.user.id)
+    except:
+        user = CustomUser.objects.all().first()
     return Response(OfferSerializer(offers, many=True,
-                                    context={'user': request.user}).data)
+                                    context={'user': user}).data)
 
 
 @api_view(['GET'])
@@ -155,15 +160,13 @@ def splash(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_home(request):
     home_articles = Article.objects.filter(is_active=True,
                                            is_special=True).order_by('-created_at')
-    user = CustomUser.objects.get(id=request.user.id)
     message = HomeMessage.objects.filter(is_active=True).order_by('-created_at').last()
     data = {
         'articles': ArticleSerializer(home_articles, many=True).data,
-        'user': CustomUserSerializer(user).data,
         'message': MessageSerializer(message).data
     }
     return Response(data=data, status=status.HTTP_200_OK)
