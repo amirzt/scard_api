@@ -32,7 +32,7 @@ def get_plans(request):
     return Response({
         "plans": PlanSerializer(plans, many=True).data,
         # 'user': CustomUserSerializer(user).data,
-        "support": SupportSerializer(Support.objects.all().last(), many=True).data
+        "support": SupportSerializer(Support.objects.all().last()).data
     })
 
 
