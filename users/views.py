@@ -170,3 +170,10 @@ def get_home(request):
         'message': MessageSerializer(message).data
     }
     return Response(data=data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def get_user(request):
+    user = CustomUser.objects.get(id=request.user.id)
+    return Response(CustomUserSerializer(user).data, status=status.HTTP_200_OK)

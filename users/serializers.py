@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from users.models import CustomUser, Shop, Favorite, Offer, HomeMessage
+from users.models import CustomUser, Shop, Favorite, Offer, HomeMessage, Support
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -53,4 +53,10 @@ class OfferSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = HomeMessage
+        fields = '__all__'
+
+
+class SupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Support
         fields = '__all__'
