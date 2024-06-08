@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import CustomUser, Shop, Offer, HomeMessage
+from users.models import CustomUser, Shop, Offer, HomeMessage, Support
 
 
 @admin.register(CustomUser)
@@ -29,3 +29,10 @@ class HomeMessageAdmin(admin.ModelAdmin):
     list_display = ('title',)
     search_fields = ('title__startswith',)
     fields = ('title', 'content',)
+
+
+@admin.register(Support)
+class SupportAdmin(admin.ModelAdmin):
+    list_display = ('phone',)
+    # search_fields = ('title__startswith',)
+    fields = ('phone', 'email', 'telegram')
