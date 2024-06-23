@@ -20,7 +20,7 @@ ZP_API_REQUEST = "https://api.zarinpal.com/pg/v4/payment/request.json"
 ZP_API_VERIFY = "https://api.zarinpal.com/pg/v4/payment/verify.json"
 ZP_API_STARTPAY = "https://www.zarinpal.com/pg/StartPay/{authority}"
 
-CallbackURL = 'https://addstory.website/api/shop/verify/'
+CallbackURL = 'https://api.myscard.ir/api/shop/verify/'
 
 
 @api_view(['POST'])
@@ -68,7 +68,7 @@ def send_request(request):
         "amount": int(request.GET['amount']),
         "callback_url": CallbackURL,
         "description": request.GET['description'],
-        "metadata": {"username": request.GET['username'], "email": ''},
+        "metadata": {"phone": request.GET['phone'], "email": ''},
     }
     req_header = {"accept": "application/json",
                   "content-type": "application/json'"}
@@ -126,7 +126,7 @@ def verify(request):
                 # update expire date
                 data = {
                     'user': transaction.user.id,
-                    'duration': transaction.duration
+                    'duration': transaction.plan.duration
                 }
                 thread = threading.Thread(target=update_expire_date,
                                           args=[data])
