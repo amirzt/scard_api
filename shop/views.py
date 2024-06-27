@@ -217,4 +217,4 @@ def add_discount(request):
         user.save()
         return Response(status=status.HTTP_200_OK)
     except Discount.DoesNotExist:
-        return Response({"message": "کد وارد شده صحیح نیست"}, status=status.HTTP_200_OK)
+        return Response({"message": "کد وارد شده صحیح نیست"}, status=status.HTTP_400_BAD_REQUEST)
