@@ -57,3 +57,8 @@ class Transaction(models.Model):
 
     def __str__(self):
         return self.user.phone + ' - ' + self.plan.title
+
+
+class Discount(models.Model):
+    code = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    duration = models.IntegerField(default=30)

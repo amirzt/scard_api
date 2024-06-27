@@ -9,5 +9,6 @@ urlpatterns = [
     path('verify/', views.verify),
     path('add_bazar_myket_order/', views.add_bazar_myket_order),
     path('get_transactions/', views.get_transactions),
+    path('add_discount/', views.add_discount),
 
 ]

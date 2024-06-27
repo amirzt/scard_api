@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from shop.models import Plan, ZarinpalCode, Transaction
+from shop.models import Plan, ZarinpalCode, Transaction, Discount
 from shop.serializers import PlanSerializer, AddTransactionSerializer, TransactionSerializer
 from users.models import CustomUser, Support
 from users.serializers import CustomUserSerializer, SupportSerializer
@@ -201,3 +201,20 @@ def get_transactions(request):
                                               state=Transaction.StateChoices.SUCCESS).order_by('-created_at')
 
     return Response(TransactionSerializer(transactions, many=True).data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_discount(request):
+    try:
+        discount = Discount.objects.get(code=request.data['code'])
+        user = CustomUser.objects.get(id=request.user.id)
+
+        if user.expire_date < timezone.now():
+            user.expire_date = timezone.now() + datetime.timedelta(days=int(discount.duration))
+        else:
+            user.expire_date += datetime.timedelta(days=int(discount.duration))
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+    except Discount.DoesNotExist:
+        return Response({"message": "کد وارد شده صحیح نیست"}, status=status.HTTP_200_OK)
